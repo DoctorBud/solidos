@@ -106,6 +106,37 @@ These scripts assume that `~/.nvm/nvm.sh` is a script that is sourced and establ
 ```bash
 cd ~/.nvm
 ln -s /usr/local/opt/nvm/nvm.sh nvm.sh
+ln -s /usr/local/opt/nvm/etc/bash_completion.d/nvm bash_completion
+```
+
+### `zsh` Requirements
+
+These scripts attempt to run in a `bash` environment, and rely up an `nvm`'s `bash_completion` capability, which ensures that if a directory contains an `.nvmrc` file ith a specific NodeJS version, then an `nvm use` will be performed to establish that version for subsequent commands such as `npm install`.
+
+However, the `nvm` `bash_completion` script does not always work correctly in a `zsh` shell. The workaround is to add the following to `~/.zshenv` (or `~/.zshrc` or `~/.zsh_profile`). From [](https://gdevops.gitlab.io/tuto_javascript/installation/nvm/nvm.html#zsh):
+
+```zsh
+# place this after nvm initialization!
+autoload -U add-zsh-hook
+load-nvmrc() {
+  local node_version="$(nvm version)"
+  local nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$node_version" ]; then
+      nvm use
+    fi
+  elif [ "$node_version" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
 ```
 
 ## First time setup
