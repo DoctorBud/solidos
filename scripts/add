@@ -143,7 +143,6 @@ echo $GIT_URL
 echo ">>>>> ADDING REPO - $GIT_URL to $FOLDER"
 cd workspaces
 git clone $GIT_URL $FOLDER
-cat ~/.gitconfig
 cd $FOLDER
 nvm use --delete-prefix
 npm i
